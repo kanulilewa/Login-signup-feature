@@ -1,23 +1,66 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from "react";
+import {BrowserRouter, Routes, Route, Link, useNavigate} from "react-router-dom";
+import Signup from "./Signup";
+import Login from "./Login";
+import axios from "axios";
+
 
 function App() {
+  const navigate = useNavigate();
+  const [logged_in, set_logged_in] = useState(false);
+  const[user_data, set_user_data] = useState({});
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token){
+      set_logged_in(true);
+      Fetch_user_data(token);
+    }
+  }, []);
+
+  async function Fetch_user_data(token) {
+    try {
+      const res = await axios.get("http://localhost:5000/user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userData = res.data.user;
+      if(userData) {set_user_data(userData); console.log(userData);}
+      
+      set_logged_in(true);
+    }catch(error){
+      console.log(error);
+      set_logged_in(false);
+      set_user_data({});
+    }
+  }
+
+  function HandleLogout(){
+    set_logged_in(false);
+    localStorage.removeItem('token');
+    set_user_data({});
+    navigate("/");
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+    <nav>navigation here</nav>
+      
+     
+      <Routes>
+      
+        
+        
+      
+      
+        {logged_in && <Route path="/dashboard" element={<> <h1>{user_data.name}</h1> <button onClick={HandleLogout}>Logout</button> </>} />}
+         
+        <Route path="/" element={<div><Link to="/signup">Signup</Link><Link to="/login">Login</Link></div>}/>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login logged_in={logged_in} set_logged_in={set_logged_in} Fetch_user_data={Fetch_user_data}/>} />
+       
+      </Routes>
+      
+      
     </div>
   );
 }
