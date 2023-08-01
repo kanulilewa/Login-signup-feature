@@ -3,6 +3,7 @@ import {BrowserRouter, Routes, Route, Link, useNavigate} from "react-router-dom"
 import Signup from "./Signup";
 import Login from "./Login";
 import axios from "axios";
+import Dashboard from "./Dashboard";
 
 
 function App() {
@@ -24,7 +25,8 @@ function App() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const userData = res.data.user;
-      if(userData) {set_user_data(userData); console.log(userData);}
+      set_user_data(userData); 
+      console.log(userData);
       
       set_logged_in(true);
     }catch(error){
@@ -43,16 +45,16 @@ function App() {
 
   return (
     <div>
-    <nav>navigation here</nav>
+    
       
-     
+      <nav>navigation here</nav>
       <Routes>
       
         
         
       
       
-        {logged_in && <Route path="/dashboard" element={<> <h1>{user_data.name}</h1> <button onClick={HandleLogout}>Logout</button> </>} />}
+        {logged_in && <Route path="/dashboard" element={<Dashboard user_data={user_data} HandleLogout={HandleLogout}/>} />}
          
         <Route path="/" element={<div><Link to="/signup">Signup</Link><Link to="/login">Login</Link></div>}/>
         <Route path="/signup" element={<Signup />} />

@@ -1,10 +1,11 @@
 
 import { useState } from "react";
 import {PostUser} from "./api.js"
+import { useNavigate } from "react-router-dom";
 
 
 export default function Signup(){
-
+    const navigate = useNavigate();
     const [signup, setSignup] = useState({
         name: "",
         email: "",
@@ -23,6 +24,7 @@ export default function Signup(){
             password: "",
             confirm_password: "" 
         }); 
+        navigate("/login");
     }
 
     return(
